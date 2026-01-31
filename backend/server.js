@@ -22,15 +22,15 @@ app.post('/api/convert', async (req, res) => {
     }
 
     const prompt = `
-You are an expert Automation Engineer. Convert the following Java Selenium (TestNG) code into idiomatic Playwright TypeScript code.
-Rules:
-1. Use 'test' from '@playwright/test'.
-2. Use 'await expect(...)' for assertions.
-3. Use 'page.locator(...)' selectors.
-4. Output ONLY the code. No markdown formatting, no explanations.
-
-Java Code:
+You are a strict code converter.
+Task: Convert Java Selenium code to Playwright TypeScript.
+Input:
 ${sourceCode}
+
+Instructions:
+1. ONLY return the TypeScript code.
+2. Do NOT include explanations, "Sure", or "Here is the code".
+3. Wrap result in \`\`\`typescript blocks.
     `;
 
     try {
@@ -40,12 +40,21 @@ ${sourceCode}
             stream: false
         });
 
-        const rawOutput = response.data.response;
-        // Basic cleanup if model adds markdown
-        const cleanedOutput = rawOutput.replace(/```typescript/g, '').replace(/```/g, '').trim();
+        let converted = response.data.response;
+
+        // Extract code block if present
+        const codeBlockRegex = /```(?:typescript|ts)?\s*([\s\S]*?)\s*```/;
+        const match = converted.match(codeBlockRegex);
+
+        if (match && match[1]) {
+            converted = match[1];
+        } else {
+            // Fallback cleanup
+            converted = converted.replace(/```/g, '').trim();
+        }
 
         res.json({
-            convertedCode: cleanedOutput,
+            convertedCode: converted,
             status: 'SUCCESS'
         });
 
