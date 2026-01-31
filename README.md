@@ -14,15 +14,20 @@ The system follows a strict **3-Layer Architecture** ensures reliability and sep
 
 ```mermaid
 graph TD
-    User[👩‍💻 User] -->|1. Pastes Java Code| UI[Frontend (React/Vite)]
-    UI -->|2. Sends JSON Payload| API[Backend (Express Node.js)]
-    API -->|3. Construct Prompt| LLM[Local AI Engine (Ollama)]
+    User([👩‍💻 User]) -->|1. Pastes Java Code| UI[Frontend React/Vite]
+    UI -->|2. Sends JSON Payload| API[Backend Express Node.js]
+    API -->|3. Construct Prompt| LLM[Local AI Engine Ollama]
     
     subgraph Local_Machine [Your Machine]
         UI
         API
         LLM
     end
+    
+    LLM -->|4. DeepSeek generates TS| API
+    API -->|5. Clean & Format| UI
+    UI -->|6. Display Result| User
+```
     
     LLM -->|4. DeepSeek generates TS| API
     API -->|5. Clean & Format| UI
